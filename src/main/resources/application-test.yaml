@@ -1,0 +1,23 @@
+server:
+  port: 5000
+spring:
+  jpa:
+    open-in-view: false
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+  datasource:
+    hikari:
+      max-lifetime: 540000
+    url: jdbc:h2:mem:pharmacy
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  liquibase:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:pharmacy;INIT=CREATE SCHEMA IF NOT EXISTS pharmacy
+    user: sa
+    password: password
+    default-schema: pharmacy
