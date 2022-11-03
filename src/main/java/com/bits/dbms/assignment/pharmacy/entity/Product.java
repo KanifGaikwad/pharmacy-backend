@@ -8,7 +8,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "product")
@@ -16,7 +18,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Product {
+public class Product implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,4 +35,12 @@ public class Product {
     private String modified_by;
     @UpdateTimestamp
     private Date modified_on;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "product_offers",
+            joinColumns = {@JoinColumn(name = "product_product_id", referencedColumnName = "product_id",
+                    nullable = false, updatable = false)},
+            inverseJoinColumns = {@JoinColumn(name = "offer_offer_id", referencedColumnName = "offer_id",
+                    nullable = false, updatable = false)})
+    private Set<Offer> offers;
 }

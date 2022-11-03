@@ -1,22 +1,24 @@
 package com.bits.dbms.assignment.pharmacy.service;
 
+import com.bits.dbms.assignment.pharmacy.entity.Offer;
 import com.bits.dbms.assignment.pharmacy.entity.Product;
+import com.bits.dbms.assignment.pharmacy.repository.OfferRepository;
 import com.bits.dbms.assignment.pharmacy.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-
-    public ProductServiceImpl(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
-
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final OfferRepository offerRepository;
 
     public List<Product> findAllProducts() {
         return productRepository.findAll();
@@ -56,6 +58,23 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> searchByName(String nameStr) {
-       return productRepository.searchByProductName(nameStr);
+        return productRepository.searchByProductName(nameStr);
+    }
+
+    @Override
+    @Transactional
+    public void saveProductOffer(List<Product> products) {
+        products.forEach(product -> {
+            Optional<Product> byId = productRepository.findById(product.getProduct_id());
+            if (byId.isPresent()) {
+                Set<Offer> offers = product.getOffers();
+                Set<Offer> collect = offers.stream()
+                        .map(offer -> offerRepository.getReferenceById(offer.getOffer_id()))
+                        .collect(Collectors.toSet());
+                Product product1 = byId.get();
+                product1.setOffers(collect);
+                productRepository.save(product1);
+            }
+        });
     }
 }

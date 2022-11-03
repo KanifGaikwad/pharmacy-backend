@@ -19,4 +19,6 @@ public interface ProductService {
 
     List<Product> searchByName(String nameStr);
 
+    void saveProductOffer(List<Product> products);
+
 }
